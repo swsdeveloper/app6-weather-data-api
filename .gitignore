@@ -1,2 +1,6 @@
 .venv
 .idea
+/tutorial.html
+/about.html
+/static/cat.png
+/tutorial.py
