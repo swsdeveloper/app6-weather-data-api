@@ -7,11 +7,17 @@
 <body>
     <h1>Historic Weather Data API</h1>
     <br>
-    <p>URL format:  http://127.0.0.1:{{port}}/api/v1/station/date</p>
+    <p>URL format:  http://127.0.0.1:{{port}}/api/v1
+        /<span style="color: red"> {optional qualifier}</span>
+        /<span style="color: blue"> station ID (STAID)</span>
+        /<span style="color: brown"> date (yyyy-mm-dd)</span></p>
     <br>
-    <p>One station, one date:  http://127.0.0.1:{{port}}/api/v1/<span style="color: blue">10/1887-10-25</span></p>
-    <p>One station, one year:  http://127.0.0.1:{{port}}/api/v1/<span style="color: red">yearly</span>/<span style="color: blue">10/1887</span></p>
-    <p>One station, all dates: http://127.0.0.1:{{port}}/api/v1/<span style="color: blue">10</span></p>
+
+    <p>One station, one date:   http://127.0.0.1:{{port}}/api/v1/<span style="color: blue">10</span>/<span style="color: brown">1887-10-25</span></p>
+    <p>One station, one year:   http://127.0.0.1:{{port}}/api/v1/<span style="color: red">yearly</span>/<span style="color: blue">10</span>/<span style="color: brown">1887</span></p>
+    <p>One station, one month:  http://127.0.0.1:{{port}}/api/v1/<span style="color: red">monthly</span>/<span style="color: blue">10</span>/<span style="color: brown">1887-10</span></p>
+    <p>One station, all dates:  http://127.0.0.1:{{port}}/api/v1/<span style="color: blue">10</span></p>
+
     <!--    The following renders HTML as a string of HTML code:-->
     <!--    <p>{{data}}</p>-->
     <!--    But appending "|safe" renders the HTML itself:-->

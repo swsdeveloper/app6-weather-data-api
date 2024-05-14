@@ -96,5 +96,32 @@ def one_year(station, year):
     return result
 
 
+@app.route("/api/v1/monthly/<station>/<year_month>")
+def one_month(station, year_month):
+    if len(year_month) != 7:  # yyyy-mm
+        result = f"*** Invalid date '{year_month}' - enter as YYYY-MM ***"
+        return result
+
+    year = year_month[:4]
+    month = year_month[5:]
+    yearmonth = year + month  # yyyymm
+
+    df = get_station_data(station, convert_dates=False)  # Return a Pandas DataFrame or an error message string
+    if type(df) is str:
+        result = df  # Error message returned from get_station_data()
+        return result
+
+    # Convert date from Integer to String:
+    df['    DATE'] = df['    DATE'].astype(str)
+
+    df = df.loc[df['    DATE'].str.startswith(yearmonth)]  # Result is a Pandas DataFrame
+    if len(df) == 0:
+        result = f"*** Station '{station}' has no records for month: {month} of year: {year} ***"
+        return result
+
+    result = df.to_dict(orient="records")  # returns a list of dictionaries
+    return result
+
+
 if __name__ == "__main__":
     app.run(debug=True, port=port)  # port 5000 is the default
