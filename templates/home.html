@@ -9,5 +9,9 @@
     <br>
     <p>URL format:  http://127.0.0.1:5000/api/v1/station/date</p>
     <p>URL Example: http://127.0.0.1:5000/api/v1/10/1988-10-25</p>
+    <!--    The following renders HTML as a string of HTML code:-->
+    <!--    <p>{{data}}</p>-->
+    <!--    But appending "|safe" renders the HTML itself:-->
+    <p>{{data|safe}}</p>
 </body>
 </html>
