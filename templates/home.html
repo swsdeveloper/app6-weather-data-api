@@ -2,13 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Weather Data API</title>
+    <title>Historic Weather Data API</title>
 </head>
 <body>
-    <h1>Weather Data API</h1>
+    <h1>Historic Weather Data API</h1>
     <br>
-    <p>URL format:  http://127.0.0.1:5000/api/v1/station/date</p>
-    <p>URL Example: http://127.0.0.1:5000/api/v1/10/1988-10-25</p>
+    <p>URL format:  http://127.0.0.1:{{port}}/api/v1/station/date</p>
+    <br>
+    <p>One station, one date:  http://127.0.0.1:{{port}}/api/v1/<span style="color: blue">10/1887-10-25</span></p>
+    <p>One station, one year:  http://127.0.0.1:{{port}}/api/v1/<span style="color: red">yearly</span>/<span style="color: blue">10/1887</span></p>
+    <p>One station, all dates: http://127.0.0.1:{{port}}/api/v1/<span style="color: blue">10</span></p>
     <!--    The following renders HTML as a string of HTML code:-->
     <!--    <p>{{data}}</p>-->
     <!--    But appending "|safe" renders the HTML itself:-->

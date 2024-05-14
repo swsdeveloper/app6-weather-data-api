@@ -15,28 +15,85 @@ stations = stations[['STAID', 'STANAME                                 ']]  # St
 html_stations = stations.to_html()
 
 
+def get_station_data(station_id: str, convert_dates=True):
+    """
+    Read CSV file of specified weather station to retrieve weather history
+
+    :param station_id: id number of weather station
+    :param convert_dates: If True, convert Dates from Ints to Date objects (default)
+                          If False, leave Dates in Int format
+    :return: df: a Pandas DataFrame -- if station file exists
+             df: a string containing an error message -- if station file not found
+    """
+    station_filename = "data_small/TG_STAID" + f"{station_id:0>6}" + ".txt"
+    try:
+        if convert_dates:
+            df = pd.read_csv(station_filename, skiprows=20, parse_dates=["    DATE"])
+        else:
+            df = pd.read_csv(station_filename, skiprows=20)
+    except FileNotFoundError:
+        df = f"*** Station ID (STAID) '{station_id}' Not Found ***"
+    return df
+
+
 # Create Home page and grab tutorial.html
 @app.route("/")
 def home():
-    return render_template("home.html", data=html_stations)
+    return render_template("home.html", port=port, data=html_stations)
 
 
 @app.route("/api/v1/<station>/<date>")
 def about(station, date):
-    # One way to convert station to a 6 byte string with leading zeros:
-    # str(station).zfill(6)
-    #
-    # Here's another way using an f-string:
-    txt_filename = "data_small/TG_STAID" + f"{station:0>6}" + ".txt"
-    df = pd.read_csv(txt_filename, skiprows=20, parse_dates=["    DATE"])
+    df = get_station_data(station)  # Return a Pandas DataFrame or an error message string
+    if type(df) is str:
+        result = df  # Error message returned from get_station_data()
+        return result
 
-    # get temp on specified date
-    df_row = df.loc[df['    DATE'] == date]
+    # Get temp on specified date
+    df_row = df.loc[df['    DATE'] == date]  # This is a Pandas Series
+    if len(df_row) == 0:
+        result = f"*** Station '{station}' has no records for this date: {date} ***"
+        return result
+
     temperature = df_row['   TG'].squeeze() / 10  # celsius
     fahrenheit = temperature * (9/5) + 32
+    result = {"station": station, "date": date, "temperature": fahrenheit}
+    return result
 
-    result_dictionary = {"station": station, "date": date, "temperature": fahrenheit}
-    return result_dictionary
+
+@app.route("/api/v1/<station>")
+def all_data(station):
+    df = get_station_data(station)  # Return a Pandas DataFrame or an error message string
+    if type(df) is str:
+        result = df  # Error message returned from get_station_data()
+        return result
+
+    # The next line returns dict organized by ROW (index 0 data, index 1 data, etc.):
+    result = df.to_dict(orient="records")  # returns a list of dictionaries
+    return result
+
+
+@app.route("/api/v1/yearly/<station>/<year>")
+def one_year(station, year):
+    if len(year) != 4:
+        result = f"*** Invalid year '{year}' - enter as YYYY ***"
+        return result
+
+    df = get_station_data(station, convert_dates=False)  # Return a Pandas DataFrame or an error message string
+    if type(df) is str:
+        result = df  # Error message returned from get_station_data()
+        return result
+
+    # Convert date from Integer to String:
+    df['    DATE'] = df['    DATE'].astype(str)
+
+    df = df.loc[df['    DATE'].str.startswith(year)]  # Result is a Pandas DataFrame
+    if len(df) == 0:
+        result = f"*** Station '{station}' has no records for year: {year} ***"
+        return result
+
+    result = df.to_dict(orient="records")  # returns a list of dictionaries
+    return result
 
 
 if __name__ == "__main__":
