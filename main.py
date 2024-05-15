@@ -17,7 +17,7 @@ html_stations = stations.to_html()
 
 def get_station_data(station_id: str, convert_dates=True):
     """
-    Read CSV file of specified weather station to retrieve weather history
+    Read CSV file of specified weather station to retrieve weather history.
 
     :param station_id: id number of weather station
     :param convert_dates: If True, convert Dates from Ints to Date objects (default)
@@ -39,11 +39,20 @@ def get_station_data(station_id: str, convert_dates=True):
 # Create Home page and grab tutorial.html
 @app.route("/")
 def home():
+    """Display this website's home page"""
     return render_template("home.html", port=port, data=html_stations)
 
 
 @app.route("/api/v1/<station>/<date>")
-def about(station, date):
+def about(station: str, date: str):
+    """
+    Get specified station's temperature for a specified date in the past.
+
+    :param station: Station ID (aka STAID)
+    :param date: YYYY-MM-DD
+    :return: if found: dictionary containing 3 keys: Station, Date, and Temperature (converted to Fahrenheit)
+             if not found: string containing an error message
+    """
     df = get_station_data(station)  # Return a Pandas DataFrame or an error message string
     if type(df) is str:
         result = df  # Error message returned from get_station_data()
@@ -62,7 +71,15 @@ def about(station, date):
 
 
 @app.route("/api/v1/<station>")
-def all_data(station):
+def all_data(station: str):
+    """
+    Get specified station's temperature for all (recorded) dates in the past.
+
+    :param station: Station ID (aka STAID)
+    :return: if station file is found, list of dictionaries, one per date, each containing 3 keys:
+                Station, Date, and Temperature (converted to Fahrenheit)
+             if station not found: string containing an error message
+    """
     df = get_station_data(station)  # Return a Pandas DataFrame or an error message string
     if type(df) is str:
         result = df  # Error message returned from get_station_data()
@@ -74,7 +91,16 @@ def all_data(station):
 
 
 @app.route("/api/v1/yearly/<station>/<year>")
-def one_year(station, year):
+def one_year(station: str, year: str):
+    """
+    Get specified station's temperature for one specific year in the past.
+
+    :param station: Station ID (aka STAID)
+    :param year: YYYY
+    :return: if found, list of dictionaries, one per date, each containing 3 keys:
+                Station, Date, and Temperature (converted to Fahrenheit)
+             if not found: string containing an error message
+    """
     if len(year) != 4:
         result = f"*** Invalid year '{year}' - enter as YYYY ***"
         return result
@@ -98,6 +124,15 @@ def one_year(station, year):
 
 @app.route("/api/v1/monthly/<station>/<year_month>")
 def one_month(station, year_month):
+    """
+    Get specified station's temperature for one specific month in the past.
+
+    :param station: Station ID (aka STAID)
+    :param year_month: YYYY-MM
+    :return: if found, list of dictionaries, one per date, each containing 3 keys:
+                Station, Date, and Temperature (converted to Fahrenheit)
+             if not found: string containing an error message
+    """
     if len(year_month) != 7:  # yyyy-mm
         result = f"*** Invalid date '{year_month}' - enter as YYYY-MM ***"
         return result
