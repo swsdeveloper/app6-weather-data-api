@@ -50,9 +50,16 @@ def about(station: str, date: str):
 
     :param station: Station ID (aka STAID)
     :param date: YYYY-MM-DD
-    :return: if found: dictionary containing 3 keys: Station, Date, and Temperature (converted to Fahrenheit)
+    :return: if found: dictionary containing 3 keys:
+                date: yyyy-mm-dd (str)
+                station: integer (in str format)
+                temperature: in Fahrenheit (float)
              if not found: string containing an error message
     """
+    if len(date) != 10:  # yyyy-mm-dd
+        result = f"*** Invalid date '{date}' - enter as YYYY-MM-DD ***"
+        return result
+
     df = get_station_data(station)  # Return a Pandas DataFrame or an error message string
     if type(df) is str:
         result = df  # Error message returned from get_station_data()
@@ -76,8 +83,12 @@ def all_data(station: str):
     Get specified station's temperature for all (recorded) dates in the past.
 
     :param station: Station ID (aka STAID)
-    :return: if station file is found, list of dictionaries, one per date, each containing 3 keys:
-                Station, Date, and Temperature (converted to Fahrenheit)
+    :return: if found, list of dictionaries, one per date, each containing 5 keys:
+                DATE: in this format: "Thu, 01 Jan 1874 00:00:00 GMT" (str)
+                TG: temperature in Celsius with 1 implied decimal place (eg: -147 = -14.7 Celsius) (signed int)
+                Q_TG: quality of data: 0=valid, 1=suspect, 9=missing (int)
+                SOUID: source identifier (int)
+                STAID: station ID (int)
              if station not found: string containing an error message
     """
     df = get_station_data(station)  # Return a Pandas DataFrame or an error message string
@@ -97,8 +108,12 @@ def one_year(station: str, year: str):
 
     :param station: Station ID (aka STAID)
     :param year: YYYY
-    :return: if found, list of dictionaries, one per date, each containing 3 keys:
-                Station, Date, and Temperature (converted to Fahrenheit)
+    :return: if found, list of dictionaries, one per date, each containing 5 keys:
+                DATE: yyyymmdd (str)
+                TG: temperature in Celsius with 1 implied decimal place (eg: -147 = -14.7 Celsius) (signed int)
+                Q_TG: quality of data: 0=valid, 1=suspect, 9=missing (int)
+                SOUID: source identifier (int)
+                STAID: station ID (int)
              if not found: string containing an error message
     """
     if len(year) != 4:
@@ -129,8 +144,12 @@ def one_month(station, year_month):
 
     :param station: Station ID (aka STAID)
     :param year_month: YYYY-MM
-    :return: if found, list of dictionaries, one per date, each containing 3 keys:
-                Station, Date, and Temperature (converted to Fahrenheit)
+    :return: if found, list of dictionaries, one per date, each containing 5 keys:
+                DATE: yyyymmdd (str)
+                TG: temperature in Celsius with 1 implied decimal place (eg: -147 = -14.7 Celsius) (signed int)
+                Q_TG: quality of data: 0=valid, 1=suspect, 9=missing (int)
+                SOUID: source identifier (int)
+                STAID: station ID (int)
              if not found: string containing an error message
     """
     if len(year_month) != 7:  # yyyy-mm
